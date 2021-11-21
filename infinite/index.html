@@ -5,6 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scroll Project</title>
+    <style>
+        .box
+        {
+            border: 1px solid black;
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -15,21 +22,43 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
+    var holdload = false;
+    var oset = 0;
 $(function(){
-    loadArt(7);
+    loadArt(20);
+});
+
+$(window).scroll(function(){
+if( $(window).scrollTop() >= $(document).height()- $(window).height()-100){
+    loadArt(1);
+}
+
 });
 
 function loadArt(a){
-   var oset = 0;
+    if(!holdload){
+  
+   holdload = true;
    $.ajax({
      url: "api.php",
      type:"POST",
      data : {oset:oset , iload: a},
      dataType : "JSON",
-     success: function (data){
+     success: function (data){ 
          console.log(data);
+         for(var i = 0; i<data.content.length; i++){
+             oset ++;
+             var item = data.content[i];
+             var html = '<div class="box">'+item.id+''+item.content+''+item.date+'</div>'
+             $("#content").append(html);
+             
+         }
+         holdload =false;
+
+         if(data.content.length == 0){holdload = true;}
      }
    }); 
+ }
 }
 
 </script>
